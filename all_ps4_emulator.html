@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#090b10">
+<title>All PS4 Emulator — Prototype</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#080a0f;--panel:#11151d;--panel2:#171c26;--text:#f5f7fb;--muted:#8d96a8;--blue:#2d8cff;--line:#242b37}
+body{font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at 50% 0,#172131 0,#080a0f 42%);color:var(--text);min-height:100vh;overflow-x:hidden}
+button{font:inherit;color:inherit;border:0;cursor:pointer}
+header{height:70px;display:flex;align-items:center;justify-content:space-between;padding:0 5%;border-bottom:1px solid #202631;background:rgba(8,10,15,.86);backdrop-filter:blur(14px);position:sticky;top:0;z-index:20}
+.logo{font-size:21px;font-weight:800;letter-spacing:.5px}.logo span{color:var(--blue)}
+.nav{display:flex;gap:8px}.nav button{background:transparent;padding:10px 14px;border-radius:8px;color:#aeb6c5}.nav button.active,.nav button:hover{background:#1a202b;color:#fff}
+.status{display:flex;align-items:center;gap:8px;color:#aab3c1;font-size:13px}.dot{width:8px;height:8px;background:#37dc82;border-radius:50%;box-shadow:0 0 12px #37dc82}
+main{max-width:1200px;margin:auto;padding:34px 5% 90px}
+.hero{min-height:300px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(120deg,rgba(30,39,53,.96),rgba(10,13,19,.92));padding:42px;display:flex;align-items:center;justify-content:space-between;gap:30px;overflow:hidden;position:relative}
+.hero:after{content:"";position:absolute;width:380px;height:380px;border-radius:50%;right:-110px;top:-130px;background:radial-gradient(circle,#236fd8 0,rgba(35,111,216,.12) 42%,transparent 70%)}
+.heroText{position:relative;z-index:1;max-width:620px}.eyebrow{color:#62a9ff;font-size:12px;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px}
+h1{font-size:clamp(34px,6vw,64px);line-height:1;margin-bottom:16px}h1 span{color:#4099ff}
+.hero p{color:#9da7b8;line-height:1.7;max-width:600px}
+.actions{display:flex;gap:12px;margin-top:25px;flex-wrap:wrap}.primary,.secondary{padding:13px 18px;border-radius:10px;font-weight:700}.primary{background:var(--blue)}.primary:hover{background:#55a5ff}.secondary{background:#202733;border:1px solid #303846}.secondary:hover{background:#283140}
+.console{width:280px;height:170px;border:1px solid #303a49;border-radius:24px;background:linear-gradient(145deg,#202734,#0c1016);box-shadow:0 25px 50px #0008;transform:rotate(-7deg);position:relative;z-index:1}.console:before{content:"";position:absolute;left:25px;right:25px;top:23px;height:7px;border-radius:8px;background:#3a4350}.console:after{content:"ALL PS4";position:absolute;left:30px;bottom:30px;color:#758297;font-weight:700;letter-spacing:2px}
+.section{margin-top:38px}.sectionHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px}.section h2{font-size:21px}.sectionHead span{font-size:12px;color:var(--muted)}
+.games{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.game{background:var(--panel);border:1px solid var(--line);border-radius:13px;overflow:hidden;transition:.2s}.game:hover{transform:translateY(-3px);border-color:#354356}
+.cover{height:150px;display:flex;align-items:flex-end;padding:15px;background-size:cover;background-position:center;position:relative}.cover:after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 35%,#000c)}
+.cover b{position:relative;z-index:1;font-size:18px}.gameInfo{padding:12px}.gameInfo small{color:var(--muted);display:block;margin-bottom:10px}.play{width:100%;padding:9px;border-radius:8px;background:#202733;font-weight:700}.play:hover{background:#2b3544}
+.emu{margin-top:38px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}.screen{aspect-ratio:16/9;background:#020304;border-radius:10px;border:1px solid #252c36;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}.screen .scan{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 3px,#fff 4px);opacity:.015;pointer-events:none}.boot{text-align:center;color:#667184}.boot .ps{font-size:44px;font-weight:200;letter-spacing:8px;color:#dfe5ef;margin-bottom:8px}.boot p{font-size:13px}.bar{height:10px;background:#171c25;border-radius:10px;margin:15px auto 0;width:190px;overflow:hidden}.bar i{display:block;width:0;height:100%;background:var(--blue);transition:width .3s}
+.emuControls{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-top:16px}.controlHint{color:var(--muted);font-size:12px}.fullscreen{padding:10px 14px;background:#202733;border-radius:8px}
+.pad{display:none;margin:22px auto 0;max-width:360px;height:250px;position:relative}.pad button{position:absolute;background:#202733;border:1px solid #394353;width:48px;height:48px;border-radius:50%;box-shadow:0 5px 15px #0006}.d-up{left:42px;top:55px}.d-left{left:0;top:102px}.d-right{left:84px;top:102px}.d-down{left:42px;top:149px}.b1{right:0;top:55px}.b2{right:55px;top:102px}.b3{right:0;top:149px}.b4{right:55px;top:196px}.home{left:50%;top:105px;transform:translateX(-50%);width:42px!important;height:42px!important;background:#151a22!important}
+footer{text-align:center;color:#5e6878;font-size:12px;padding:25px}
+.modal{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:20px;z-index:50}.modal.show{display:flex}.box{width:min(480px,100%);background:#121720;border:1px solid #303846;border-radius:16px;padding:22px}.box h3{margin-bottom:8px}.box p{color:#9ca6b6;font-size:13px;line-height:1.6;margin-bottom:18px}.close{background:#252d39;padding:9px 15px;border-radius:8px}
+@media(max-width:850px){.games{grid-template-columns:repeat(2,1fr)}.console{display:none}.hero{padding:30px}.nav button{padding:8px}.status{display:none}}
+@media(max-width:520px){header{height:62px;padding:0 16px}.nav button{font-size:12px;padding:8px}.nav button:nth-child(3){display:none}main{padding:22px 16px 60px}.hero{padding:25px;min-height:320px}h1{font-size:39px}.games{grid-template-columns:1fr 1fr}.cover{height:125px}.gameInfo{padding:10px}.gameInfo small{font-size:11px}.pad{display:block}.emuControls{align-items:flex-start;flex-direction:column}.controlHint{line-height:1.5}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">ALL <span>PS4</span> EMULATOR</div>
+  <nav class="nav">
+    <button class="active" onclick="showSection('home')">Home</button>
+    <button onclick="showSection('library')">Library</button>
+    <button onclick="showSection('emulator')">Emulator</button>
+  </nav>
+  <div class="status"><i class="dot"></i> Prototype Online</div>
+</header>
+
+<main>
+<section id="home">
+  <div class="hero">
+    <div class="heroText">
+      <div class="eyebrow">Web Emulator Prototype</div>
+      <h1>ALL <span>PS4</span><br>EMULATOR</h1>
+      <p>Antarmuka emulator bergaya konsol modern. Kelola library game, buka layar emulator, dan gunakan kontrol virtual dari HP atau keyboard PC.</p>
+      <div class="actions">
+        <button class="primary" onclick="startEmulator()">▶ Start Emulator</button>
+        <button class="secondary" onclick="document.getElementById('library').scrollIntoView({behavior:'smooth'})">Library</button>
+      </div>
+    </div>
+    <div class="console"></div>
+  </div>
+
+  <div class="section" id="library">
+    <div class="sectionHead"><h2>Game Library</h2><span>Demo titles</span></div>
+    <div class="games">
+      <div class="game"><div class="cover" style="background:linear-gradient(135deg,#253e68,#111725)"><b>Racing Demo</b></div><div class="gameInfo"><small>Racing • Demo</small><button class="play" onclick="launch('Racing Demo')">Play</button></div></div>
+      <div class="game"><div class="cover" style="background:linear-gradient(135deg,#592b68,#16111d)"><b>Adventure Demo</b></div><div class="gameInfo"><small>Adventure • Demo</small><button class="play" onclick="launch('Adventure Demo')">Play</button></div></div>
+      <div class="game"><div class="cover" style="background:linear-gradient(135deg,#714328,#17120e)"><b>Action Demo</b></div><div class="gameInfo"><small>Action • Demo</small><button class="play" onclick="launch('Action Demo')">Play</button></div></div>
+      <div class="game"><div class="cover" style="background:linear-gradient(135deg,#1c655f,#0d1717)"><b>Sports Demo</b></div><div class="gameInfo"><small>Sports • Demo</small><button class="play" onclick="launch('Sports Demo')">Play</button></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="emu" id="emulator">
+  <div class="sectionHead"><h2 id="gameTitle">Emulator Screen</h2><button class="fullscreen" onclick="fullscreen()">⛶ Fullscreen</button></div>
+  <div class="screen" id="screen">
+    <div class="scan"></div>
+    <div class="boot"><div class="ps">PS</div><p id="screenText">Ready — pilih game lalu tekan Play</p><div class="bar"><i id="progress"></i></div></div>
+  </div>
+  <div class="emuControls"><div class="controlHint">Keyboard: WASD = D-Pad • J/K/L/I = Buttons • Enter = Start • Space = Select</div><button class="primary" onclick="startEmulator()">▶ Boot Emulator</button></div>
+  <div class="pad">
+    <button class="d-up" onclick="input('UP')">▲</button><button class="d-left" onclick="input('LEFT')">◀</button><button class="d-right" onclick="input('RIGHT')">▶</button><button class="d-down" onclick="input('DOWN')">▼</button>
+    <button class="b1" onclick="input('△')">△</button><button class="b2" onclick="input('□')">□</button><button class="b3" onclick="input('○')">○</button><button class="b4" onclick="input('×')">×</button><button class="home" onclick="input('HOME')">PS</button>
+  </div>
+</section>
+</main>
+
+<footer>ALL PS4 Emulator • Front-end prototype • Gunakan hanya game/firmware yang kamu miliki secara legal.</footer>
+
+<div class="modal" id="modal"><div class="box"><h3>Prototype Info</h3><p>Ini adalah prototype antarmuka web. Tombol emulator mensimulasikan proses boot dan kontrol, tetapi tidak menjalankan game PS4 asli.</p><button class="close" onclick="closeModal()">Tutup</button></div></div>
+
+<script>
+let currentGame='';
+function showSection(id){
+  const el=document.getElementById(id);
+  if(el) el.scrollIntoView({behavior:'smooth'});
+}
+function launch(name){
+  currentGame=name;
+  document.getElementById('gameTitle').textContent=name;
+  document.getElementById('screenText').textContent='Menyiapkan '+name+'...';
+  document.getElementById('progress').style.width='0';
+  showSection('emulator');
+  setTimeout(startEmulator,250);
+}
+function startEmulator(){
+  showSection('emulator');
+  const text=document.getElementById('screenText'), bar=document.getElementById('progress');
+  text.textContent=currentGame ? 'Booting '+currentGame+'...' : 'Booting ALL PS4 Emulator...';
+  bar.style.width='0';
+  let n=0; const t=setInterval(()=>{n+=10;bar.style.width=n+'%';if(n>=100){clearInterval(t);text.textContent='Prototype ready — emulator engine placeholder';}},90);
+}
+function fullscreen(){
+  const el=document.getElementById('screen');
+  if(document.fullscreenElement) document.exitFullscreen(); else el.requestFullscreen?.();
+}
+function input(key){
+  document.getElementById('screenText').textContent='Input: '+key;
+}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+document.addEventListener('keydown',e=>{
+ const map={w:'UP',a:'LEFT',d:'RIGHT',s:'DOWN',j:'△',k:'□',l:'○',i:'×',Enter:'START',' ':'SELECT'};
+ if(map[e.key]){e.preventDefault();input(map[e.key])}
+});
+</script>
+</body>
+</html>
